@@ -1,6 +1,7 @@
 import React,{lazy} from 'react'
 import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import ProtectRoute from './components/styles/auth/ProtectRoute.jsx';
+import { dividerClasses } from '@mui/material';
 
 const Home = lazy( ()=> import('./pages/Home.jsx'));
 const Login = lazy( ()=> import('./pages/Login.jsx'));
@@ -14,7 +15,7 @@ let user=true;
 
   return (
     <BrowserRouter>
-
+      <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route element={<ProtectRoute user={user}/>}>
 
@@ -32,7 +33,7 @@ let user=true;
         />
         <Route path="*" element={<NotFound/>}/>  
       </Routes>
-    
+      </Suspense>
     </BrowserRouter>
   );
 }
