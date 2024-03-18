@@ -1,6 +1,6 @@
 import React, {Suspense, useState} from "react";
 import {useNavigate} from "react-router-dom"
-import {AppBar, Box, Icon, IconButton, Toolbar, Tooltip, Typography} from "@mui/material"
+import {AppBar, Backdrop, Box, Icon, IconButton, Toolbar, Tooltip, Typography} from "@mui/material"
 import { orange } from "../../constants/color.js";
 import {
     Group as GroupIcon,
@@ -96,7 +96,7 @@ const Header=()=>{
                         onClick={openNewGroup}
                     />
                     <IconBtn
-                        title={"Search"}
+                        title={"People"}
                         icon={<GroupIcon/>}
                         onClick={navigateToGroup}
                     />
@@ -121,19 +121,19 @@ const Header=()=>{
         </Box>
 
         {isSearch && (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Backdrop open/>}>
                 <SearchDialog/>
             </Suspense>
         )}
 
         {isNotification && (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Backdrop open/>}>
                 <NotificationDialog/>
             </Suspense>
         )}
 
         {isNewGroup && (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Backdrop open/>}>
                 <NewGroupDialog/>
             </Suspense>
         )}
