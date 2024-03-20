@@ -19,7 +19,7 @@ return (props)=>{
             <>
                 <Title/>
                 <Header/>
-                <Grid container height={"94.074vh"}>
+                <Grid container height={"91.674vh"}>
                     <Grid 
                     item 
                     sm = {4}

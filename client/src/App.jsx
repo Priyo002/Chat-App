@@ -5,7 +5,7 @@ import { LayoutLoader } from './components/layout/Loaders.jsx';
 
 const Home = lazy( ()=> import('./pages/Home.jsx'));
 const Login = lazy( ()=> import('./pages/Login.jsx'));
-const Chats = lazy( ()=> import('./pages/Chats.jsx'));
+const Chat = lazy( ()=> import('./pages/Chat.jsx'));
 const Groups = lazy( ()=> import('./pages/Groups.jsx'));
 const NotFound=lazy(()=> import("./pages/NotFound.jsx"));
 
@@ -21,7 +21,7 @@ let user=true;
         <Route element={<ProtectRoute user={user}/>}>
 
           <Route path='/' element={<Home/>}/>
-          <Route path='/chat/:chatId' element={<Chats/>}/>
+          <Route path='/chat/:chatId' element={<Chat/>}/>
           <Route path='/groups' element={<Groups/>}/>
         </Route>
         <Route 
