@@ -17,7 +17,7 @@ const AdminLogin = () => {
         console.log("Submit")
     }
 
-    if(!isAdmin) return <Navigate to="/admin/dashboard"/>
+    if(isAdmin) return <Navigate to="/admin/dashboard"/>
 
     return (
     <div
