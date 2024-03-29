@@ -1,38 +1,33 @@
-import { Schema, model,models } from "mongoose";
+
+import mongoose, { Schema, model,Types} from "mongoose";
 
 
 const schema = new Schema(
-{
-    name:{
-        type: String,
-        required : true,
-    },
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password:{
-        type: String,
-        required: true,
-        select: false,
-    },
-    avatar: {
-        public_id:{
+    {
+        name:{
             type: String,
-            required: true,
+            required : true,
         },
-        url:{
-            type: String,
-            required: true,
+        groupChat: {
+            type: Boolean,
+            default:false,
         },
-    },
+        creator:{
+            type: Types.ObjectId,
+            ref:"User",
+        },
+        members:[
+            {
+                type:Types.ObjectId,
+                ref:"User",    
+            }
+        ]
 
-},
-{
-    timestamps: true
-}
+    },
+    {
+        timestamps: true,
+    }
 
 );
 
-export const User = models.User || model("User",schema);
+export const Chat = mongoose.models.Chat || model("Chat",schema);
