@@ -1,11 +1,18 @@
 import express from 'express';
 import userRoute from "./routes/user.js"
 import { connectDB } from './utils/features.js';
+import dotenv from "dotenv";
 
+dotenv.config({
+    path: "./.env"
+});
+
+const mongoURI = process.env.MONGO_URI;
+const port = process.env.PORT || 3000;
 
 const app = express();
 
-connectDB("mongodb://localhost:27017/Chattapp");
+connectDB(mongoURI);
 
 app.use("/user",userRoute);
 
