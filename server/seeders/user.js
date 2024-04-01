@@ -29,4 +29,7 @@ const createUser=async(numUsers)=>{
     }
 };
 
-export { createUser };
+
+
+export{createUser};
+
