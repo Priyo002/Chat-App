@@ -12,7 +12,7 @@ import adminRoute from './routes/admin.js';
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from './constants/events.js';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
-
+import cors from 'cors';
 
 
 dotenv.config({
@@ -36,12 +36,19 @@ const io=new Server(server,{});
 // Using middlewares here
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+    origin: [
+        "http://localhost:5173", 
+        "http://localhost:4173", 
+        process.env.CLIENT_URL,
+    ],
+    credentials: true,
+}))
 
 
-
-app.use("/user",userRoute);
-app.use("/chat",chatRoute);
-app.use("/admin",adminRoute);
+app.use("/api/v1/user",userRoute);
+app.use("/api/v1/chat",chatRoute);
+app.use("/api/v1/admin",adminRoute);
 app.get("/",(req,res)=>{
     res.send("Hello World")
 });

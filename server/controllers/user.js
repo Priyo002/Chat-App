@@ -46,7 +46,6 @@ const login =TryCatch(async (req,res,next) => {
 });
 
 const getMyProfile=TryCatch(async(req,res,next)=>{
-
     const user=await User.findById(req.user);
 
     if(!user) return next(new ErrorHandler("User not found",404));

@@ -5,6 +5,11 @@ import { VisuallyHiddenInput } from '../components/styles/StyledComponents.jsx'
 import {useFileHandler, useInputValidation} from '6pp'
 import { usernameValidator } from '../utils/validators.js'
 import { bgGradient } from '../constants/color.js'
+import axios from 'axios'
+import { server } from '../constants/config.js'
+import { useDispatch } from 'react-redux'
+import { userExists } from '../redux/reducers/auth.js'
+import toast from 'react-hot-toast'
 
 function Login() {
   const [isLogin,setIsLogin] = useState(true);
@@ -19,8 +24,31 @@ function Login() {
 
   const avatar = useFileHandler("single");
 
-  const handleLogin=(e)=>{
+  const dispatch = useDispatch();
+
+  const handleLogin = async (e)=>{
     e.preventDefault();
+
+    try {
+      const config = {
+        withCredentials: true,
+        headers:{
+          "Content-Type": "application/json",
+        },
+      };
+  
+      const { data } = await axios.post(`${server}/api/v1/user/login`,{
+        username: username.value,
+        password: password.value,
+      },config);
+
+      dispatch(userExists(true));
+      toast.success(data.message);
+
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something Went Wrong");
+    }
+
   };
   const handleSignUp=(e)=>{
     e.preventDefault();
