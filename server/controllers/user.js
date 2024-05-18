@@ -7,16 +7,21 @@ import { Chat } from '../models/chat.js';
 import {Request} from '../models/request.js'
 import { NEW_REQUEST, REFETCH_CHATS } from '../constants/events.js';
 import { getOtherMember } from '../lib/helper.js';
-
+import { uploadFilestoCloudinary } from '../utils/features.js';
 
 // Create a new user and save it to the database and save tokwn in cookie
 const newUser=TryCatch(async(req,res,next)=>{
     const {name,username,password,bio}=req.body;
+
     const file=req.file;
-    if(!file) return next(new ErrorHandler("Please Upload avatar"))
+
+    if(!file) return next(new ErrorHandler("Please Upload avatar"));
+
+    const result = await uploadFilestoCloudinary([file]);
+
     const avatar={
-        public_id:"sdfsd",
-        url:"asdfd",
+        public_id: result[0].public_id,
+        url: result[0].url,
     }
     const user=await User.create({
         name,

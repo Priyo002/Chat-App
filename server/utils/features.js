@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
+import {v4 as uuid} from 'uuid'
+import {v2 as cloudinary} from 'cloudinary';
+import { getBase64 } from "../lib/helper.js";
 
 const cookieOptions={
     maxAge:15*24*60*60*1000,
@@ -30,9 +33,48 @@ const emitEvent=(req,event,users,data)=>{
     console.log("Emmiting event",event)
 };
 
+const  uploadFilestoCloudinary = async (files = [])=>{
+    // Upload files to Cloudinary
+
+    const uploadPromises = files.map((file) => {
+        return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload(
+                getBase64(file),
+                {
+                resource_type:"auto",
+                public_id: uuid(),
+                }, 
+                (err, result) => {
+                if (err) reject(err);
+                resolve(result);
+            });
+        });
+    });
+
+    try {
+        const results = await Promise.all(uploadPromises);
+
+        const formattedResults = results.map((result) => ({
+            public_id: result.public_id,
+            url: result.secure_url,
+        }));
+
+        return formattedResults;
+    } catch (error) {
+        throw new Error("Error uploading files to Cloudinary",error);
+    }
+}
+
 const deleteFilesFromCloudinary=async(public_ids)=>{
     // Delete files from Cloudinary
 }
 
 
-export {connectDB,sendToken,cookieOptions,emitEvent,deleteFilesFromCloudinary};
+export {
+    connectDB,
+    sendToken,
+    cookieOptions,
+    emitEvent,
+    deleteFilesFromCloudinary,
+    uploadFilestoCloudinary
+};
