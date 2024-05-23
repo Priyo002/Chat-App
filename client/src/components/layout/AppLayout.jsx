@@ -12,13 +12,19 @@ const AppLayout = () => (WrappedComponent)=>{
 return (props)=>{
 
         const params = useParams();
+        const dispatch = useDispatch();
         const chatId = params.chatId;
+
+        const { isMobile } = useSelector((state)=>state.misc); 
 
         const {isLoading, data, isError, error, refetch} = useMyChatsQuery("");
 
         const handleDeletechat = (e,_id,groupChat) =>{
             console.log(e,_id,groupChat)
         }
+
+        const handleMobileClose = () => dispatch(setIsMobile(false));
+
         return(
             <>
                 <Title/>
