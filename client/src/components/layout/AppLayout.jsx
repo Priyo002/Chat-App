@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header.jsx";
 import Title from "../shared/Title.jsx";
 import { Grid, Skeleton } from "@mui/material";
 import ChatList from "../specific/ChatList.jsx";
-import { samplechats } from "../../constants/sampleData.js";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/Profile.jsx";
 import { useMyChatsQuery } from "../../redux/api/api.js";
-import setIsMobile from "../../redux/reducers/misc.js";
+import { setIsMobile } from "../../redux/reducers/misc.js";
 import { useDispatch, useSelector } from "react-redux";
+import { Drawer } from "@mui/material";
+import { useErrors } from "../../hooks/hook.jsx";
 
 const AppLayout = () => (WrappedComponent)=>{
 return (props)=>{
@@ -21,6 +22,8 @@ return (props)=>{
 
         const {isLoading, data, isError, error, refetch} = useMyChatsQuery("");
 
+        useErrors([{isError, error}]);
+
         const handleDeletechat = (e,_id,groupChat) =>{
             console.log(e,_id,groupChat)
         }
@@ -31,6 +34,23 @@ return (props)=>{
             <>
                 <Title/>
                 <Header/>
+
+                {isLoading ? (
+                    <Skeleton/>
+                ) : ( 
+                    <Drawer 
+                        open={isMobile} 
+                        onClose={handleMobileClose}
+                    >
+                        <ChatList
+                            w="70vw"
+                            chats={data?.chats}
+                            chatId={chatId}
+                            handleDeletechat={handleDeletechat}
+                        />
+                    </Drawer>
+                )}
+
                 <Grid container height={"91.674vh"}>
                     <Grid 
                     item 
