@@ -7,6 +7,8 @@ import { samplechats } from "../../constants/sampleData.js";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/Profile.jsx";
 import { useMyChatsQuery } from "../../redux/api/api.js";
+import setIsMobile from "../../redux/reducers/misc.js";
+import { useDispatch, useSelector } from "react-redux";
 
 const AppLayout = () => (WrappedComponent)=>{
 return (props)=>{
