@@ -8,6 +8,10 @@ const schema = new Schema(
         type: String,
         required : true,
     },
+    bio:{
+        type: String,
+        required: true,
+    },
     username: {
         type: String,
         required: true,
