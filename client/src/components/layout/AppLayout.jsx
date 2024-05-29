@@ -10,6 +10,7 @@ import { setIsMobile } from "../../redux/reducers/misc.js";
 import { useDispatch, useSelector } from "react-redux";
 import { Drawer } from "@mui/material";
 import { useErrors } from "../../hooks/hook.jsx";
+import { getSocket } from "../../socket.jsx";
 
 const AppLayout = () => (WrappedComponent)=>{
 return (props)=>{
@@ -17,6 +18,11 @@ return (props)=>{
         const params = useParams();
         const dispatch = useDispatch();
         const chatId = params.chatId;
+
+
+        const socket = getSocket();
+
+        console.log(socket.id);
 
         const { isMobile } = useSelector((state)=>state.misc); 
         const { user } = useSelector((state)=> state.auth);
