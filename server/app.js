@@ -15,6 +15,7 @@ import { Message } from './models/message.js';
 import cors from 'cors';
 import {v2 as cloudinary} from 'cloudinary';
 import { corsOptions } from './config.js';
+import { socketAuthenticator } from './middlewares/auth.js';
 
 dotenv.config({
     path: "./.env"
@@ -55,15 +56,19 @@ app.get("/",(req,res)=>{
     res.send("Hello World")
 });
 
-// io.use((socket,next)=>{});
+io.use((socket,next)=>{
+    cookieParser()(
+        socket.request,
+        socket.request.res,
+        async(err)=> await socketAuthenticator(err,socket,next)
+    );
+});
 
 io.on("connection",(socket)=>{
-
-    const user={
-        _id:"asdsda",
-        name:"Namego"
-    };
+    const user = socket.user;
+   
     userSocketIDs.set(user._id.toString(),socket.id);
+
     console.log(userSocketIDs);
 
     socket.on(NEW_MESSAGE,async({chatId,members,message})=>{
