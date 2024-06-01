@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 import jwt from 'jsonwebtoken';
 import {v4 as uuid} from 'uuid'
 import {v2 as cloudinary} from 'cloudinary';
-import { getBase64 } from "../lib/helper.js";
+import { getBase64, getSockets } from "../lib/helper.js";
 
 const cookieOptions={
     maxAge:15*24*60*60*1000,
@@ -29,8 +29,10 @@ const sendToken=(res,user,code,message)=>{
     });
 };
 
-const emitEvent=(req,event,users,data)=>{
-    console.log("Emmiting event",event)
+const emitEvent = (req,event,users,data)=>{
+   let io = req.app.get("io");
+   const userSocket = getSockets(users);
+   io.to(userSocket).emit(event,data)
 };
 
 const  uploadFilestoCloudinary = async (files = [])=>{

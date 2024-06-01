@@ -1,7 +1,7 @@
 import { userSocketIDs } from "../app.js";
 
 export const getOtherMember=(members,userId)=>
- members.find((member)=>member?._id?.toString()!==userId?.toString
+ members.find((member)=>member?._id?.toString()!==userId.toString
  ());
 
 export const getSockets=(users=[])=>{
@@ -10,5 +10,4 @@ export const getSockets=(users=[])=>{
     return sockets;
 }
 
-export const getBase64 = (file) => 
-    `data:${file.mimetype};base64,${file?.buffer?.toString("base64")}`;
+export const getBase64 = (file) => `data:${file.mimetype};base64,${file?.buffer?.toString("base64")}`;
