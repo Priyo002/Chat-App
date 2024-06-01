@@ -14,7 +14,6 @@ const initialState = {
         chatId: "",
         groupChat: false,
     }
-
 };
 
 const miscSlice = createSlice({

@@ -51,7 +51,7 @@ const allUsers=TryCatch(async(req,res)=>{
             return{
                 name,
                 username,
-                avatar:avatar.url,
+                avatar:avatar?.url,
                 _id,
                 groups,
                 friends
@@ -77,15 +77,15 @@ const allChats=TryCatch(async(req,res)=>{
                 _id,
                 groupChat,
                 name,
-                avatar:members.slice(0,3).map((member)=>member.avatar.url),
+                avatar:members.slice(0,3).map((member)=>member.avatar?.url),
                 members:members.map(({_id,name,avatar})=>({
                         _id,
                         name,
-                        avatar:avatar.url,
+                        avatar:avatar?.url,
                 })),
                 creator:{
                     name:creator?.name || "None",
-                    avatar:creator?.avatar.url || "",
+                    avatar:creator?.avatar?.url || "",
                 },
                 totalMembers:members.length,
                 totalMessages,
@@ -114,7 +114,7 @@ const allMessages=TryCatch(async(req,res)=>{
             sender:{
                 _id:sender._id,
                 name:sender.name,
-                avatar:sender.avatar.url,
+                avatar:sender?.avatar?.url,
             }
         })
     )

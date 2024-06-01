@@ -55,7 +55,7 @@ function Login() {
 
     const formData = new FormData();
 
-    formData.append("avatar",avatar.file);
+    formData.append("avatar",avatar?.file);
     formData.append("name", name.value);
     formData.append("bio",bio.value);
     formData.append("username",username.value);
