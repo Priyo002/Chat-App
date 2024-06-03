@@ -7,12 +7,13 @@ import { InputBox } from '../components/styles/StyledComponents.jsx';
 import FileMenu from '../components/dialogs/FileMenu.jsx';
 import MessageComponent from '../components/shared/MessageComponent.jsx'
 import { getSocket } from '../socket.jsx';
-import { NEW_MESSAGE } from '../constants/events.js';
+import { NEW_MESSAGE, START_TYPING } from '../constants/events.js';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api.js';
 import { useErrors, useSocketEvents } from '../hooks/hook.jsx';
 import { useInfiniteScrollTop } from '6pp';
 import { useDispatch } from 'react-redux';
 import { setIsFileMenu } from '../redux/reducers/misc.js';
+import { removeNewMessagesAlert } from '../redux/reducers/chat.js';
 
 
 const Chat = ({chatId, user}) => {
@@ -42,6 +43,13 @@ const Chat = ({chatId, user}) => {
 
   const members = chatDetails?.data?.chat?.members;
 
+  const messageOnChange = (e) => {
+    setMessage(e.target.value);
+
+    socket.emit(START_TYPING,{members,chatId});
+
+  }
+
   const handleFileOpen = (e) => {
     dispatch(setIsFileMenu(true));
     setFileMenuAnchor(e.currentTarget);
@@ -59,18 +67,45 @@ const Chat = ({chatId, user}) => {
 
   }
 
-  const newMessageHandler = useCallback((data) => {
+  useEffect(()=>{
+
+    dispatch(removeNewMessagesAlert(chatId));
+
+    return () => {
+      setMessages([]);
+      setMessage("");
+      setPage(1);
+      setOldMessages([]);
+    };
+  },[chatId]);
+
+  const newMessagesListener = useCallback((data) => {
+
     console.log(data);
+    if(data.chatId !== chatId) return;
     setMessages((prev) => [...prev,data.message]);
-  },[]);
+
+  },[chatId]);
+
+  const startTypingListener = useCallback((data) => {
+
+    if(data.chatId !== chatId) return;
+
+    console.log("typing",data);
+  
+  },[chatId]);
+
 
   const errors = [
+
     {isError: chatDetails.isError, error: chatDetails.error},
     {isError: oldMessagesChunk.isError, error: oldMessagesChunk.error}
+
   ];
 
   const eventHandler = {
-    [NEW_MESSAGE]: newMessageHandler,
+    [NEW_MESSAGE]: newMessagesListener,
+    [START_TYPING]: startTypingListener,
   };
 
   useSocketEvents(socket,eventHandler);
@@ -134,7 +169,7 @@ const Chat = ({chatId, user}) => {
           <InputBox 
             placeholder="Type message here..." 
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={messageOnChange}
           />
 
           <IconButton type="submit" sx={{

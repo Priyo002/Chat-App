@@ -9,7 +9,7 @@ import {v4 as uuid} from 'uuid'
 import userRoute from "./routes/user.js"
 import chatRoute from "./routes/chat.js";
 import adminRoute from './routes/admin.js';
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from './constants/events.js';
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING } from './constants/events.js';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
 import cors from 'cors';
@@ -105,6 +105,14 @@ io.on("connection",(socket)=>{
             console.log(error);
         }
     });
+
+    socket.on(START_TYPING,({members,chatId})=>{
+        console.log("typing",members,chatId);
+
+        const memberSockets = getSockets(members);
+        socket.to(memberSockets).emit(START_TYPING,{chatId});
+    })
+
     socket.on("disconnect",()=>{
         console.log("user disconnected");
         userSocketIDs.delete(user._id.toString());

@@ -12,7 +12,8 @@ import { Drawer } from "@mui/material";
 import { useErrors, useSocketEvents } from "../../hooks/hook.jsx";
 import { getSocket } from "../../socket.jsx";
 import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events.js";
-import { increamentNotication } from "../../redux/reducers/chat.js";
+import { increamentNotification, setNewMessagesAlert } from "../../redux/reducers/chat.js";
+import { getOrSaveFromStorage } from "../../lib/features.js";
 
 const AppLayout = () => (WrappedComponent)=>{
 return (props)=>{
@@ -28,10 +29,14 @@ return (props)=>{
 
         const { isMobile } = useSelector((state)=>state.misc); 
         const { user } = useSelector((state)=> state.auth);
-
-        const {isLoading, data, isError, error, refetch} = useMyChatsQuery("");
+        const { newMessagesAlert } = useSelector((state)=>state.chat);
+        const { isLoading, data, isError, error } = useMyChatsQuery("");
 
         useErrors([{isError, error}]);
+
+        useEffect(() => {
+            getOrSaveFromStorage({key: NEW_MESSAGE_ALERT, value: newMessagesAlert});
+        },[newMessagesAlert]);
 
         const handleDeletechat = (e,_id,groupChat) =>{
             console.log(e,_id,groupChat)
@@ -39,18 +44,24 @@ return (props)=>{
 
         const handleMobileClose = () => dispatch(setIsMobile(false));
 
-        const newMessageAlertHandler = useCallback(() => {},[]);
+        const newMessageAlertsHandler = useCallback((data) => {
+            if(chatId === data.chatId) return;
+            dispatch(setNewMessagesAlert(data));
+            
+        },[]);
         
         const newRequestHandler = useCallback(() => {
-            dispatch(increamentNotication());
+            dispatch(increamentNotification());
         },[dispatch]);
 
         const eventHandlers = {
-            [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
+            [NEW_MESSAGE_ALERT]: newMessageAlertsHandler,
             [NEW_REQUEST]: newRequestHandler,
         };
 
         useSocketEvents(socket,eventHandlers);
+
+        console.log("n\n",newMessagesAlert);
 
         return(
             <>
@@ -69,6 +80,7 @@ return (props)=>{
                             chats={data?.chats}
                             chatId={chatId}
                             handleDeletechat={handleDeletechat}
+                            newMessagesAlert = {newMessagesAlert}
                         />
                     </Drawer>
                 )}
@@ -83,10 +95,12 @@ return (props)=>{
                     }}
                     height={"100%"}>
                     {
-                        isLoading  ? (<Skeleton/>) : (<ChatList 
-                        chats={data?.chats} 
-                        chatId={chatId}
-                        handleDeletechat={handleDeletechat}
+                        isLoading  ? (<Skeleton/>) : (
+                        <ChatList 
+                            chats={data?.chats} 
+                            chatId={chatId}
+                            handleDeletechat={handleDeletechat}
+                            newMessagesAlert = {newMessagesAlert}
                         />)
                     }
                     </Grid>

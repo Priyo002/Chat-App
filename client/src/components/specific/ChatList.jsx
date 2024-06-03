@@ -8,7 +8,7 @@ const ChatList = ({
     chats=[],
     chatId, 
     onlineUsers=[],
-    newMeassagesAlert=[
+    newMessagesAlert=[
         {
             chatId: "",
             count: 0,
@@ -16,6 +16,7 @@ const ChatList = ({
     ],
     handleDeletechat,
 }) => {
+    console.log("from chatlist",newMessagesAlert);
   return (
     <Stack 
         width={w} 
@@ -26,7 +27,7 @@ const ChatList = ({
         {chats?.map((data,index) => {
             const {avatar,_id,name,groupChat,members} = data;
 
-            const newMessageAlert = newMeassagesAlert.find(
+            const newMessageAlert = newMessagesAlert.find(
                 ({chatId}) => chatId === _id
             );
 
