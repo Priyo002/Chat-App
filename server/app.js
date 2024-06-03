@@ -9,7 +9,7 @@ import {v4 as uuid} from 'uuid'
 import userRoute from "./routes/user.js"
 import chatRoute from "./routes/chat.js";
 import adminRoute from './routes/admin.js';
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING } from './constants/events.js';
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from './constants/events.js';
 import { getSockets } from './lib/helper.js';
 import { Message } from './models/message.js';
 import cors from 'cors';
@@ -111,6 +111,13 @@ io.on("connection",(socket)=>{
 
         const memberSockets = getSockets(members);
         socket.to(memberSockets).emit(START_TYPING,{chatId});
+    })
+
+    socket.on(STOP_TYPING,({members,chatId})=>{
+        console.log("stop typing",chatId);
+
+        const memberSockets = getSockets(members);
+        socket.to(memberSockets).emit(STOP_TYPING,{chatId});
     })
 
     socket.on("disconnect",()=>{

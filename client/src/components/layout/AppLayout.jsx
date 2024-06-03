@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Drawer } from "@mui/material";
 import { useErrors, useSocketEvents } from "../../hooks/hook.jsx";
 import { getSocket } from "../../socket.jsx";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events.js";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from "../../constants/events.js";
 import { increamentNotification, setNewMessagesAlert } from "../../redux/reducers/chat.js";
 import { getOrSaveFromStorage } from "../../lib/features.js";
 
@@ -30,7 +30,7 @@ return (props)=>{
         const { isMobile } = useSelector((state)=>state.misc); 
         const { user } = useSelector((state)=> state.auth);
         const { newMessagesAlert } = useSelector((state)=>state.chat);
-        const { isLoading, data, isError, error } = useMyChatsQuery("");
+        const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
         useErrors([{isError, error}]);
 
@@ -44,24 +44,29 @@ return (props)=>{
 
         const handleMobileClose = () => dispatch(setIsMobile(false));
 
-        const newMessageAlertsHandler = useCallback((data) => {
+        const newMessageAlertsListener  = useCallback((data) => {
             if(chatId === data.chatId) return;
             dispatch(setNewMessagesAlert(data));
             
         },[]);
         
-        const newRequestHandler = useCallback(() => {
+        const newRequestListener = useCallback(() => {
             dispatch(increamentNotification());
         },[dispatch]);
 
+        const refetchListener = useCallback(() => {
+            refetch();
+        },[dispatch]);
+
         const eventHandlers = {
-            [NEW_MESSAGE_ALERT]: newMessageAlertsHandler,
-            [NEW_REQUEST]: newRequestHandler,
+            [NEW_MESSAGE_ALERT]: newMessageAlertsListener,
+            [NEW_REQUEST]: newRequestListener,
+            [REFETCH_CHATS]: refetchListener,
         };
 
         useSocketEvents(socket,eventHandlers);
 
-        console.log("n\n",newMessagesAlert);
+        //console.log("n\n",newMessagesAlert);
 
         return(
             <>

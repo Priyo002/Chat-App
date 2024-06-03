@@ -7,18 +7,20 @@ import { InputBox } from '../components/styles/StyledComponents.jsx';
 import FileMenu from '../components/dialogs/FileMenu.jsx';
 import MessageComponent from '../components/shared/MessageComponent.jsx'
 import { getSocket } from '../socket.jsx';
-import { NEW_MESSAGE, START_TYPING } from '../constants/events.js';
+import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/events.js';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api.js';
 import { useErrors, useSocketEvents } from '../hooks/hook.jsx';
 import { useInfiniteScrollTop } from '6pp';
 import { useDispatch } from 'react-redux';
 import { setIsFileMenu } from '../redux/reducers/misc.js';
 import { removeNewMessagesAlert } from '../redux/reducers/chat.js';
+import { TypingLoader } from '../components/layout/Loaders.jsx';
 
 
 const Chat = ({chatId, user}) => {
 
   const containerRef = useRef(null);
+  const bottomRef = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -26,6 +28,10 @@ const Chat = ({chatId, user}) => {
   const [ messages , setMessages ] = useState([]);
   const [ page, setPage ] = useState(1);
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
+
+  const [IamTyping, setIamTyping] = useState(false);
+  const [userTyping, setUserTyping] = useState(false);
+  const typingTimeout = useRef(null);
 
   const socket = getSocket();
 
@@ -46,7 +52,19 @@ const Chat = ({chatId, user}) => {
   const messageOnChange = (e) => {
     setMessage(e.target.value);
 
-    socket.emit(START_TYPING,{members,chatId});
+    if(!IamTyping){
+      socket.emit(START_TYPING,{members,chatId});
+      setIamTyping(true);
+    }
+
+    if(typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(() => {
+
+      socket.emit(STOP_TYPING,{members,chatId});
+      setIamTyping(false);
+
+    },1500)
 
   }
 
@@ -79,6 +97,12 @@ const Chat = ({chatId, user}) => {
     };
   },[chatId]);
 
+  useEffect(() => {
+
+    if(bottomRef.current) bottomRef.current.scrollIntoView({behavior: "smooth"});
+
+  },[messages]);
+
   const newMessagesListener = useCallback((data) => {
 
     console.log(data);
@@ -90,9 +114,35 @@ const Chat = ({chatId, user}) => {
   const startTypingListener = useCallback((data) => {
 
     if(data.chatId !== chatId) return;
+    setUserTyping(true);
 
-    console.log("typing",data);
+    //console.log("start typing",data);
   
+  },[chatId]);
+
+  const stopTypingListener = useCallback((data) => {
+
+    if(data.chatId !== chatId) return;
+    setUserTyping(false);
+
+    //console.log("stop typing",data);
+  
+  },[chatId]);
+
+  const alertListener = useCallback((content) => {
+
+    const messageForAlert = {
+      content,
+      sender: {
+        _id: "adfhasfHeloiuahsf",
+        name: "Admin",
+      },
+      chat: chatId,
+      createdAt:new Date().toISOString(),
+    }
+
+    setMessages((prev) => [...prev,messageForAlert]);
+
   },[chatId]);
 
 
@@ -104,8 +154,10 @@ const Chat = ({chatId, user}) => {
   ];
 
   const eventHandler = {
+    [ALERT]: alertListener,
     [NEW_MESSAGE]: newMessagesListener,
     [START_TYPING]: startTypingListener,
+    [STOP_TYPING]: stopTypingListener,
   };
 
   useSocketEvents(socket,eventHandler);
@@ -137,7 +189,9 @@ const Chat = ({chatId, user}) => {
         ))
       }
 
+      {userTyping && <TypingLoader/>}
 
+      <div ref={bottomRef}/>      
 
       </Stack>
 
