@@ -1,4 +1,4 @@
-import {Backdrop, Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import {Backdrop, Box, Button, CircularProgress, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import React, { useState, memo, useEffect, lazy, Suspense } from 'react'
 import { 
   Add as AddIcon,
@@ -17,27 +17,32 @@ import UserItem from '../components/shared/UserItem.jsx'
 import { 
   useAddGroupMembersMutation,
   useChatDetailsQuery, 
+  useDeleteChatMutation, 
   useMyGroupsQuery, 
   useRemoveGroupMemberMutation, 
   useRenameGroupMutation 
 } from '../redux/api/api.js'
 import { useAsyncMutation, useErrors } from '../hooks/hook.jsx'
 import { LayoutLoader } from '../components/layout/Loaders.jsx'
+import { useDispatch, useSelector } from 'react-redux'
+import {setIsAddMember} from '../redux/reducers/misc.js'
 
 
 const ConfirmDeleteDialog = lazy(()=>import("../components/dialogs/ConfirmDeleteDialog.jsx"));
 
 const AddMemberDialog = lazy(()=>import("../components/dialogs/AddMemberDialog.jsx"));
 
-const isAddMember = false;
 
 const Groups = () => {
 
   const chatId = useSearchParams()[0].get("group");
   const navigate = useNavigate();
-  //console.log(chatId)
+  const dispatch = useDispatch();
 
+  const {isAddMember} = useSelector((state)=> state.misc);
+  
   const myGroups = useMyGroupsQuery("");
+
 
   const groupDetails = useChatDetailsQuery(
     {chatId, populate: true},
@@ -56,9 +61,9 @@ const Groups = () => {
   const [members, setMembers] = useState([]);
 
   const [ updateGroup , isLoadingGroupName ] = useAsyncMutation(useRenameGroupMutation);
-  const [ removeMember , isLoadingRemoveMember] = useAsyncMutation(useRemoveGroupMemberMutation);
-  const [ addMembers, isLoadingAddMembers ] = useAsyncMutation(useAddGroupMembersMutation);
-
+  const [ removeMember , isLoadingRemoveMember ] = useAsyncMutation(useRemoveGroupMemberMutation);
+  const [ deleteGroup , isLoadingdeleteGroup ] =  useAsyncMutation(useDeleteChatMutation);
+  
   const erros = [
     {
       isError: myGroups.isError,
@@ -70,9 +75,9 @@ const Groups = () => {
 
   useEffect(()=>{
     if(groupDetails.data){
-      setGroupName(groupDetails.data.chat.name);
+      setGroupName(groupDetails.data.chat?.name);
       setGroupNameUpdatedValue(groupDetails.data.name);
-      setMembers(groupDetails.data.chat.members);
+      setMembers(groupDetails.data.chat?.members);
     }
 
     return () => {
@@ -111,13 +116,12 @@ const Groups = () => {
     updateGroup("Updating Group Name...",{chatId, name: groupNameUpdatedValue});
   };
 
-  const removeMemberHandler = (id) => {
-    console.log("Remove Member ", id)
+  const removeMemberHandler = (userId) => {
+    removeMember("Removing Member...",{chatId, userId});
   }
 
   const openConfirmDeleteHandler = () => {
     setConfirmDeleteDialog(true);
-    console.log("Delete Group");
   };
 
   const closeConfirmDeleteHandler = () => {
@@ -125,10 +129,14 @@ const Groups = () => {
   }
 
   const openAddMemberHandler = () => {
-    console.log("Add Member");
+    dispatch(setIsAddMember(true));
   };
 
-  const deleteHandler = () => {};
+  const deleteHandler = () => {
+    deleteGroup("Deleting Group...",chatId);
+    closeConfirmDeleteHandler();
+    navigate("/groups");
+  };
 
 
 
@@ -295,8 +303,7 @@ const Groups = () => {
             overflow={"auto"}
           >
             {/* {Members} */}
-            {
-              members.map((i) => (
+            { isLoadingRemoveMember ? (<CircularProgress/>) :  ( members.map((i) => (
                 <UserItem 
                   key={i._id}
                   user={i} 
@@ -308,7 +315,7 @@ const Groups = () => {
                   }}
                   handler={removeMemberHandler}
                 />
-              ))
+              )))
             }
           </Stack>
 
@@ -321,13 +328,12 @@ const Groups = () => {
       {
         isAddMember && 
         <Suspense fallback={<Backdrop open/>}>
-          <AddMemberDialog/>
+          <AddMemberDialog chatId={chatId}/>
         </Suspense>
       }
 
       {
-        confirmDeleteDialog && 
-        <Suspense fallback={<Backdrop open/>}>
+        confirmDeleteDialog && <Suspense fallback={<Backdrop open/>}>
           <ConfirmDeleteDialog 
             open={confirmDeleteDialog} 
             handleClose={closeConfirmDeleteHandler}

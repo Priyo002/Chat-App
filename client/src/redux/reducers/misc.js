@@ -23,7 +23,7 @@ const miscSlice = createSlice({
         setIsNewGroup: (state, action) => {
             state.isNewGroup = action.payload;
         },
-        setIsMember: (state, action) => {
+        setIsAddMember: (state, action) => {
             state.isAddMember = action.payload;
         },
         setIsNotification: (state, action) => {
@@ -54,7 +54,7 @@ const miscSlice = createSlice({
 export default miscSlice;
 export const {  
     setIsNewGroup,
-    setIsMember,
+    setIsAddMember,
     setIsNotification,
     setIsMobile,
     setIsSearch,

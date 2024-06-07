@@ -3,7 +3,7 @@ import Header from "./Header.jsx";
 import Title from "../shared/Title.jsx";
 import { Grid, Skeleton } from "@mui/material";
 import ChatList from "../specific/ChatList.jsx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Profile from "../specific/Profile.jsx";
 import { useMyChatsQuery } from "../../redux/api/api.js";
 import { setIsMobile } from "../../redux/reducers/misc.js";
@@ -22,6 +22,7 @@ return (props)=>{
         const dispatch = useDispatch();
         const chatId = params.chatId;
 
+        const navigate = useNavigate();
 
         const socket = getSocket();
 
@@ -56,7 +57,8 @@ return (props)=>{
 
         const refetchListener = useCallback(() => {
             refetch();
-        },[dispatch]);
+            navigate("/")
+        },[dispatch,navigate]);
 
         const eventHandlers = {
             [NEW_MESSAGE_ALERT]: newMessageAlertsListener,
