@@ -37,19 +37,18 @@ return (props)=>{
 
         useEffect(() => {
             getOrSaveFromStorage({key: NEW_MESSAGE_ALERT, value: newMessagesAlert});
-        },[newMessagesAlert,user]);
+        },[newMessagesAlert]);
 
         const handleDeletechat = (e,_id,groupChat) =>{
             console.log(e,_id,groupChat)
         }
-        console.log(user);
+        //console.log(user);
         const handleMobileClose = () => dispatch(setIsMobile(false));
 
         const newMessageAlertsListener  = useCallback((data) => {
             if(chatId === data.chatId) return;
             dispatch(setNewMessagesAlert(data));
-            
-        },[]);
+        },[chatId]);
         
         const newRequestListener = useCallback(() => {
             dispatch(increamentNotification());
@@ -58,7 +57,7 @@ return (props)=>{
         const refetchListener = useCallback(() => {
             refetch();
             navigate("/")
-        },[dispatch,navigate]);
+        },[refetch,navigate]);
 
         const eventHandlers = {
             [NEW_MESSAGE_ALERT]: newMessageAlertsListener,
