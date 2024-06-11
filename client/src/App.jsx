@@ -29,11 +29,12 @@ const App=()=>{
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if(!(user===true)) return;
     axios
     .get(`${server}/api/v1/user/me`,{withCredentials:true})
     .then(({data}) => dispatch(userExists(data?.user)))
     .catch((error) => dispatch(userNotExists()));
-  },[dispatch])
+  },[dispatch,user])
 
   return loader ? (
     <LayoutLoader/>

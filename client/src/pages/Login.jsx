@@ -42,6 +42,8 @@ function Login() {
         password: password.value,
       },config);
 
+      console.log(data);
+      //Here is the error
       dispatch(userExists(true));
       toast.success(data.message);
 

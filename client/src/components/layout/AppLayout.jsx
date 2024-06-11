@@ -37,12 +37,12 @@ return (props)=>{
 
         useEffect(() => {
             getOrSaveFromStorage({key: NEW_MESSAGE_ALERT, value: newMessagesAlert});
-        },[newMessagesAlert]);
+        },[newMessagesAlert,user]);
 
         const handleDeletechat = (e,_id,groupChat) =>{
             console.log(e,_id,groupChat)
         }
-
+        console.log(user);
         const handleMobileClose = () => dispatch(setIsMobile(false));
 
         const newMessageAlertsListener  = useCallback((data) => {
