@@ -107,7 +107,7 @@ const Chat = ({chatId, user}) => {
 
   useEffect(() => {
     if(!chatDetails.data?.chat){
-      navigate("/");
+      return navigate("/");
     }
   },[chatDetails.data]);
 
@@ -137,10 +137,12 @@ const Chat = ({chatId, user}) => {
   
   },[chatId]);
 
-  const alertListener = useCallback((content) => {
+  const alertListener = useCallback((data) => {
+    
+    if(data.chatId!==chatId) return;
 
     const messageForAlert = {
-      content,
+      content: data.message,
       sender: {
         _id: "adfhasfHeloiuahsf",
         name: "Admin",

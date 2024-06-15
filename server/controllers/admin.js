@@ -9,14 +9,14 @@ import { adminSecretKey } from "../app.js";
 
 
 const adminLogin=TryCatch(async(req,res,next)=>{
-    const {secretKey} =req.body;
+    const {secretKey} = req.body;
 
 
-    const isMatched=secretKey===adminSecretKey;
+    const isMatched = secretKey===adminSecretKey;
 
     if(!isMatched) return next(new ErrorHandler("Invalid Admin Key",401));
 
-    const token=jwt.sign(secretKey,process.env.JWT_SECRET);
+    const token = jwt.sign(secretKey,process.env.JWT_SECRET);
 
     return res.status(200).cookie("chattapp-admin-token",token,{...cookieOptions,maxAge:1000*60*15}).json({
         success:true,

@@ -13,7 +13,7 @@ import toast from 'react-hot-toast'
 
 function Login() {
   const [isLogin,setIsLogin] = useState(true);
-
+  const [isLoading,setIsLoading] = useState(false);
 
   const toggleLogin = () => setIsLogin((prev)=> !prev);
 
@@ -29,6 +29,10 @@ function Login() {
   const handleLogin = async (e)=>{
     e.preventDefault();
 
+    const toastId = toast.loading("Logging In...");
+
+    setIsLoading(true);
+
     try {
       const config = {
         withCredentials: true,
@@ -41,20 +45,26 @@ function Login() {
         username: username.value,
         password: password.value,
       },config);
-
-      console.log(data);
-      //Here is the error
-      dispatch(userExists(true));
-      toast.success(data.message);
+    
+      dispatch(userExists(data.user));
+      toast.success(data.message,{
+        id: toastId,
+      });
 
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something Went Wrong");
+      toast.error(error?.response?.data?.message || "Something Went Wrong",{id: toastId});
+    }
+    finally{ 
+      setIsLoading(false);
     }
 
   };
   const handleSignUp= async (e)=>{
     e.preventDefault();
 
+    const toastId = toast.loading("Signing Up...");
+
+    setIsLoading(true);
     const formData = new FormData();
 
     formData.append("avatar",avatar?.file);
@@ -74,17 +84,17 @@ function Login() {
       const {data} = await axios.post(`${server}/api/v1/user/new`,
       formData,config);
 
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message,{id: toastId});
 
     } catch (error) {
 
-      toast.error(error?.response?.data?.message || "Something Went Wrong");
+      toast.error(error?.response?.data?.message || "Something Went Wrong",{id: toastId});
       
     }
-   
-    
-
+    finally{
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -144,7 +154,7 @@ function Login() {
                 onChange={password.changeHandler}
               />
 
-              <Button sx={{marginTop: "1rem"}} variant='contained' fullWidth color='primary' type='submit'>
+              <Button sx={{marginTop: "1rem"}} variant='contained' fullWidth color='primary' type='submit' disabled={isLoading}>
                 Login
               </Button>
 
@@ -152,7 +162,7 @@ function Login() {
                 OR
               </Typography>
 
-              <Button variant='text' fullWidth onClick={toggleLogin}>
+              <Button variant='text' fullWidth onClick={toggleLogin} disabled={isLoading}>
                 Sign Up Instead
               </Button>
 
@@ -261,7 +271,7 @@ function Login() {
                 )
               }
 
-              <Button sx={{marginTop: "1rem"}} variant='contained' fullWidth color='primary' type='submit'>
+              <Button sx={{marginTop: "1rem"}} variant='contained' fullWidth color='primary' type='submit' disabled={isLoading}>
                 Sign Up
               </Button>
 
@@ -269,7 +279,7 @@ function Login() {
                 OR
               </Typography>
 
-              <Button variant='text' fullWidth onClick={toggleLogin}>
+              <Button variant='text' fullWidth onClick={toggleLogin} disabled={isLoading}>
                 Login Instead
               </Button>
 

@@ -229,11 +229,6 @@ const getMyFriends=TryCatch(async(req,res)=>{
 });
 
 
-
-
-
-
-
 export {
     login,
     newUser,
