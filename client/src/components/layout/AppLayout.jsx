@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Drawer } from "@mui/material";
 import { useErrors, useSocketEvents } from "../../hooks/hook.jsx";
 import { getSocket } from "../../socket.jsx";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from "../../constants/events.js";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from "../../constants/events.js";
 import { increamentNotification, setNewMessagesAlert } from "../../redux/reducers/chat.js";
 import { getOrSaveFromStorage } from "../../lib/features.js";
 import DeleteChatMenu from "../dialogs/DeleteChatMenu.jsx";
@@ -28,6 +28,8 @@ return (props)=>{
         const socket = getSocket();
 
         const deleteMenuAnchor = useRef(null);
+
+        const [onlineUsers, setOnlineUsers] = useState([]);
 
         const { isMobile } = useSelector((state)=>state.misc); 
         const { user } = useSelector((state)=> state.auth);
@@ -62,10 +64,15 @@ return (props)=>{
             navigate("/")
         },[refetch,navigate]);
 
+        const onlineUsersListener = useCallback((data) => {
+            setOnlineUsers(data);
+        },[])
+
         const eventHandlers = {
             [NEW_MESSAGE_ALERT]: newMessageAlertsListener,
             [NEW_REQUEST]: newRequestListener,
             [REFETCH_CHATS]: refetchListener,
+            [ONLINE_USERS]: onlineUsersListener,
         };
 
         useSocketEvents(socket,eventHandlers);
@@ -90,6 +97,7 @@ return (props)=>{
                             chatId={chatId}
                             handleDeletechat={handleDeletechat}
                             newMessagesAlert = {newMessagesAlert}
+                            onlineUsers={onlineUsers}
                         />
                     </Drawer>
                 )}
@@ -110,6 +118,7 @@ return (props)=>{
                             chatId={chatId}
                             handleDeletechat={handleDeletechat}
                             newMessagesAlert = {newMessagesAlert}
+                            onlineUsers={onlineUsers}
                         />)
                     }
                     </Grid>
