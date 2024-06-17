@@ -36,7 +36,7 @@ function Search() {
     const timeOutId = setTimeout(() => {
       
       searchUser(search.value)
-      .then(({data}) => setUsers(data.users ? data.users : []))
+      .then(({data}) => setUsers(data?.users ? data?.users : []))
       .catch((err) => console.log(err));
 
     },500);
