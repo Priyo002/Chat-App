@@ -80,7 +80,7 @@ const ChatManagement=()=>{
 
     useErrors([{isError:error,error: error}]);
 
-    console.log(data);
+    //console.log(data);
 
     useEffect(() => {
         if(data){

@@ -36,7 +36,7 @@ const AddMemberDialog = ({ chatId}) => {
         closeHandler();
     };
 
-    console.log(data);
+    //console.log(data);
 
     useErrors([{isError,error}])
 

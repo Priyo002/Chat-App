@@ -9,8 +9,8 @@ const getSocket = () => useContext(SocketContext);
 const SocketProvider = ({children}) => { 
     
     const socket = useMemo(() => io(server, {
-        withCredentials: true,}),
-    []);
+        withCredentials: true,
+    }),[]);
 
     return (
         <SocketContext.Provider value={socket}>

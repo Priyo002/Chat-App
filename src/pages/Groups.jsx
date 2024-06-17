@@ -49,7 +49,7 @@ const Groups = () => {
     {skip: !chatId}
   );
 
-  console.log(groupDetails .data);
+  //console.log(groupDetails .data);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit,setIsEdit] = useState(false);

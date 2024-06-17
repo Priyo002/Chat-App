@@ -17,7 +17,7 @@ const ChatList = ({
     handleDeletechat,
 }) => {
 
-    console.log(onlineUsers);
+    //console.log(onlineUsers);
     
   return (
     <Stack 

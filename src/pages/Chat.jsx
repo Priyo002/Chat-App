@@ -116,7 +116,7 @@ const Chat = ({chatId, user}) => {
 
   const newMessagesListener = useCallback((data) => {
 
-    console.log(data);
+    //console.log(data);
     if(data.chatId !== chatId) return;
     setMessages((prev) => [...prev,data.message]);
 
